@@ -1,21 +1,32 @@
 import React, { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { View, Text, TouchableOpacity, Image, ScrollView, Dimensions, Animated } from 'react-native';
 import { COLOURS } from '../database/items';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Material from 'react-native-vector-icons/MaterialIcons';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from 'react-native-root-toast';
 
 
-const Details = ({ route, navigation }) => {
-  
-  const {
-    data
-  } = route.params;
-
+const ProductInfo = ({ route, navigation }) => {
+  const { data } = route.params;
   console.log(data)
+  const [products, setProducts] = useState({});
+
+  const width = Dimensions.get('window').width;
+
+  const scrollX = new Animated.Value(0);
+
+  let position = Animated.divide(scrollX, width);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      //getDataFromDB();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+
   return (
     <View
       style={{
@@ -33,16 +44,7 @@ const Details = ({ route, navigation }) => {
         }}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 10,
-            borderWidth: 2,
-            borderColor: COLOURS.lightGray,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: 30
-          }}>
+          style={styles.btnBack}>
           <FontAwesome
             name="angle-left"
             style={{
@@ -52,113 +54,56 @@ const Details = ({ route, navigation }) => {
           />
         </TouchableOpacity>
         <View
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 10,
-            backgroundColor: COLOURS.accent,
-            opacity: data?.isTopOfTheWeek ? 1 : 0.5,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+          style={styles.btnCart}>
           <Material name="shopping-cart" style={{ fontSize: 25, color: COLOURS.white }} onPress={() => navigation.navigate('cart')} />
         </View>
       </View>
       <Text
-        style={{
-          fontSize: 38,
-          color: COLOURS.black,
-          fontWeight: '800',
-          paddingHorizontal: 20,
-          maxWidth: 310,
-        }}>
-        {data?.name}
+        style={styles.productName}>
+        {data.name}
       </Text>
       <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 20,
-        }}>
+        style={styles.precioCont}>
         <Text
-          style={{
-            fontSize: 15,
-            color: COLOURS.gray,
-            fontWeight: '900',
-            paddingRight: 5,
-            paddingBottom: 8,
-          }}>
+          style={styles.iconPrecio}>
           $
         </Text>
         <Text
-          style={{
-            fontSize: 38,
-            color: COLOURS.gray,
-            fontWeight: '900',
-          }}>
+          style={styles.precio}>
           {data?.price}
         </Text>
       </View>
       <View
-        style={{
-          flexDirection: 'row',
-          maxHeight: 300,
-          width: '100%',
-          alignItems: 'center',
-        }}>
+        style={styles.container}>
         <View style={{ paddingHorizontal: 20 }}>
           <View style={{ paddingVertical: 20 }}>
             <Text
-              style={{
-                fontSize: 12,
-                color: COLOURS.black,
-                opacity: 0.5,
-              }}>
+              style={styles.info}>
               Size
             </Text>
             <Text
-              style={{
-                fontSize: 18,
-                color: COLOURS.black,
-                fontWeight: '600',
-              }}>
-              {data?.size}
+              style={styles.productInfo}>
+              {data.size}
             </Text>
           </View>
           <View style={{ paddingVertical: 20 }}>
             <Text
-              style={{
-                fontSize: 12,
-                color: COLOURS.black,
-                opacity: 0.5,
-              }}>
+              style={styles.info}>
               Crust
             </Text>
             <Text
-              style={{
-                fontSize: 18,
-                color: COLOURS.black,
-                fontWeight: '600',
-              }}>
+              style={styles.productInfo}>
               {data?.crust}
             </Text>
           </View>
           <View style={{ paddingVertical: 20 }}>
             <Text
-              style={{
-                fontSize: 12,
-                color: COLOURS.black,
-                opacity: 0.5,
-              }}>
+              style={styles.info}>
               Delivery
             </Text>
             <Text
-              style={{
-                fontSize: 18,
-                color: COLOURS.black,
-                fontWeight: '600',
-              }}>
-              {data?.delivery} min
+              style={styles.productInfo}>
+              {data.delivery} min
             </Text>
           </View>
         </View>
@@ -168,23 +113,13 @@ const Details = ({ route, navigation }) => {
             height: 380,
           }}>
           <Image
-            source={data?.image}
-            style={{
-              width: '100%',
-              height: '100%',
-              resizeMode: 'contain',
-            }}
+            source={data.image}
+            style={styles.img}
           />
         </View>
       </View>
       <Text
-        style={{
-          paddingTop: 20,
-          paddingHorizontal: 20,
-          fontSize: 20,
-          fontWeight: '700',
-          color: COLOURS.black,
-        }}>
+        style={styles.ingredients}>
         Ingredients
       </Text>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
@@ -192,51 +127,23 @@ const Details = ({ route, navigation }) => {
           return (
             <View
               key={index}
-              style={{
-                margin: 12,
-                width: 80,
-                height: 80,
-                borderRadius: 20,
-                backgroundColor: COLOURS.white,
-                elevation: 5,
-              }}>
+              style={styles.ingredientsCont}>
               <Image
                 source={data}
-                style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+                style={styles.img}
               />
             </View>
           );
         })}
       </ScrollView>
       <View
-        style={{
-          position: 'absolute',
-          width: '100%',
-          bottom: 0,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
+        style={styles.btnCont}>
         <TouchableOpacity
           onPress={() => addToCart(data?.id)}
-          style={{
-            width: '90%',
-            height: 80,
-            backgroundColor: COLOURS.accent,
-            borderTopRightRadius: 20,
-            borderTopLeftRadius: 20,
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'row',
-          }}>
+          style={styles.btn}>
           <Text
-            style={{
-              fontSize: 16,
-              fontWeight: 'bold',
-              color: COLOURS.black,
-              letterSpacing: 1,
-              marginRight: 10,
-            }}>
-            Place on Order
+            style={styles.btnText}>
+            Terminar orden
           </Text>
           <Entypo
             name="chevron-right"
@@ -247,40 +154,109 @@ const Details = ({ route, navigation }) => {
     </View>
   );
 };
-
-const addToCart = async (id) => {
-  console.log('id: ', id)
-  let itemArry = await AsyncStorage.getItem('cartItems')
-  itemArry = JSON.parse(itemArry)
-  if (itemArry) {
-    let array = itemArry
-    array.push(id);
-
-    try {
-      await AsyncStorage.setItem('cartItems', JSON.stringify(array))
-      Toast.show(
-        "Añadido al carrito correctamente",
-        Toast.SHORT,
-      )
-      navigation.navigate('Home')
-    } catch (error) {
-      return error
-    }
+const styles = StyleSheet.create({
+  ingredients: {
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    fontSize: 20,
+    fontWeight: '700',
+    color: COLOURS.black,
+  },
+  btnBack: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: COLOURS.lightGray,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30
+  },
+  btnCart: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: COLOURS.accent,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  productName: {
+    fontSize: 38,
+    color: COLOURS.black,
+    fontWeight: '800',
+    paddingHorizontal: 20,
+    maxWidth: 310,
+  },
+  precioCont: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  iconPrecio: {
+    fontSize: 15,
+    color: COLOURS.gray,
+    fontWeight: '900',
+    paddingRight: 5,
+    paddingBottom: 8,
+  },
+  precio: {
+    fontSize: 38,
+    color: COLOURS.gray,
+    fontWeight: '900',
+  },
+  container: {
+    flexDirection: 'row',
+    maxHeight: 300,
+    width: '100%',
+    alignItems: 'center',
+  },
+  info: {
+    fontSize: 12,
+    color: COLOURS.black,
+    opacity: 0.5,
+  },
+  productInfo: {
+    fontSize: 18,
+    color: COLOURS.black,
+    fontWeight: '600',
+  },
+  img: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  ingredientsCont: {
+    margin: 12,
+    width: 80,
+    height: 80,
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+    elevation: 5,
+  },
+  btnCont:{
+    position: 'absolute',
+    width: '100%',
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btn:{
+    width: '90%',
+    height: 80,
+    backgroundColor: COLOURS.accent,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  btnText:{
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLOURS.black,
+    letterSpacing: 1,
+    marginRight: 10,
   }
-  else {
-    let array = [];
-    array.push(id);
-    try {
-      await AsyncStorage.setItem('cartItems', JSON.stringify(array))
-      Toast.show(
-        "No se pudo añadir al carrito",
-        Toast.SHORT
-      )
-      navigation.navigate('Home')
-    } catch (error) {
-      return error
-    }
-  }
-}
+})
 
-export default Details;
+export default ProductInfo

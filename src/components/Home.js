@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import {
   View,
   Text,
@@ -15,46 +15,36 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import Details from './Details';
+import ProductInfo from './Details';
 import Toast from 'react-native-root-toast';
-import { DrawerNavigation } from '../../App';
-
-const addToCart =async(id)=>{
-  let itemArry = await AsyncStorage.getItem('cartItems')
-  itemArry = JSON.parse(itemArry)
-  if(itemArry){
-    let array = itemArry
-    array.push(id);
-
-    try{
-      await AsyncStorage.setItem('cartItems',JSON.stringify(array))
-      Toast.show(
-        "Añadido al carrito correctamente",
-        Toast.SHORT,
-      )
-      navigation.navigate('Home')
-    }catch(error){
-      return error
-    }
-  }
-  else{
-    let array = [];
-    array.push(id);
-    try{
-      await AsyncStorage.setItem('cartItems',JSON.stringify(array))
-      Toast.show(
-        "No se pudo añadir al carrito",
-        Toast.SHORT
-      )
-      navigation.navigate('Home')
-    }catch(error){
-      return error
-    }
-  }
-}
+import Search from './Search';
 
 const Home = ({navigation}) => {
   const [currentSelected, setCurrentSelected] = useState([0]);
+  const [products, setProducts] = useState([]);
+
+  //get called on screen loads
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getDataFromDB();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  //get data from DB
+
+  const getDataFromDB = () => {
+    let productList = [];
+    for (let index = 0; index < Categories.length; index++) {
+      if (Categories[index].category == 'product') {
+        productList.push(Categories[index]);
+      }
+    }
+
+    setProducts(productList);
+  };
+
 
   const renderCategories = ({item, index}) => {
     return (
@@ -68,7 +58,7 @@ const Home = ({navigation}) => {
             justifyContent: 'space-evenly',
             alignItems: 'center',
             backgroundColor:
-              currentSelected == index ? COLOURS.accent : COLOURS.white,
+              currentSelected == index ? COLOURS.accent : COLOURS.light,
             borderRadius: 20,
             margin: 10,
             elevation: 5
@@ -126,13 +116,13 @@ const Home = ({navigation}) => {
           alignItems: 'center',
         }}
         onPress={() =>
-          navigation.push('details', {data})
+          navigation.push('ProductInfo', {data})
         }>
         <View
           style={{
             width: '90%',
             height: 160,
-            backgroundColor: COLOURS.white,
+            backgroundColor: COLOURS.light,
             borderRadius: 20,
             elevation: 4,
             position: 'relative',
@@ -176,14 +166,15 @@ const Home = ({navigation}) => {
             </Text>
             <Text
               style={{
-                fontSize: 12,
+                fontSize: 14,
+                marginTop:5,
                 color: COLOURS.black,
                 opacity: 0.5,
               }}>
-              {data.weight}
+              ${data.price}
             </Text>
           </View>
-          <View style={{width: 150, height: 150, marginRight: -45}}>
+          <View style={{width: 150, height: 150, marginRight: -25}}>
             <Image
               source={data.image}
               style={{
@@ -240,7 +231,7 @@ const Home = ({navigation}) => {
       </TouchableOpacity>
     );
   };
-
+  const [input,setInput]= useState("")
   return (
     <View
       style={{
@@ -291,7 +282,7 @@ const Home = ({navigation}) => {
                 style={{
                   fontSize: 28,
                   color: COLOURS.black,
-                  marginTop:25
+                  marginTop:25,
                 }}
                 onPress={() => navigation.navigate('cart')}
               />
@@ -351,7 +342,7 @@ const Home = ({navigation}) => {
               color: COLOURS.black,
               letterSpacing: 1,
             }}>
-            Categories
+            Categorias
           </Text>
           <FlatList
             horizontal={true}
