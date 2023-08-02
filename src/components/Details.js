@@ -1,31 +1,77 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { View, Text, TouchableOpacity, Image, ScrollView, Dimensions, Animated } from 'react-native';
-import { COLOURS } from '../database/items';
+import { COLOURS, Categories, Items } from '../database/items';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Material from 'react-native-vector-icons/MaterialIcons';
+import Toast from 'react-native-root-toast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const ProductInfo = ({ route, navigation }) => {
   const { data } = route.params;
-  console.log(data)
-  const [products, setProducts] = useState({});
 
-  const width = Dimensions.get('window').width;
-
-  const scrollX = new Animated.Value(0);
-
-  let position = Animated.divide(scrollX, width);
+  const [product, setProduct] = useState({});
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      //getDataFromDB();
+      getDataFromDB();
     });
 
     return unsubscribe;
   }, [navigation]);
 
+  const getDataFromDB = async () => {
+    for (let index = 0; index < Items.length; index++) {
+      if (Items[index].id == data) {
+        await setProduct(Items[index]);
+        return;
+      }
+    }
+  };
+
+  //add to cart
+
+  const addToCart = async id => {
+    let itemArray = await AsyncStorage.getItem('cartItems');
+    itemArray = JSON.parse(itemArray);
+    if (itemArray) {
+      let array = itemArray;
+      array.push(id);
+
+      try {
+        await AsyncStorage.setItem('cartItems', JSON.stringify(array));
+        Toast.show(
+          'Añadido al carrito correctamente',{
+            backgroundColor:'#FFFFFF',
+            textColor:'green',
+            position:Toast.positions.BOTTOM,
+            opacity:1,
+            shadowColor:'#000',
+            duration:1500
+          },
+          Toast.SHORT,
+        );
+      } catch (error) {
+        return error;
+      }
+    } else {
+      let array = [];
+      array.push(id);
+      try {
+        await AsyncStorage.setItem('cartItems', JSON.stringify(array));
+        Toast.show(
+          'Item Added Successfully to cart',
+          Toast.SHORT,
+        );
+        navigation.navigate('Home');
+      } catch (error) {
+        return error;
+      }
+    }
+    console.log(data,'anadido')
+  };
 
   return (
     <View
@@ -139,7 +185,7 @@ const ProductInfo = ({ route, navigation }) => {
       <View
         style={styles.btnCont}>
         <TouchableOpacity
-          onPress={() => addToCart(data?.id)}
+          onPress={() => addToCart(data.id)}
           style={styles.btn}>
           <Text
             style={styles.btnText}>

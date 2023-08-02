@@ -12,7 +12,6 @@ import Contacto from './src/screen/Contacto';
 import Pago from './src/screen/Pago';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import { COLOURS } from './src/database/items';
-import Material from 'react-native-vector-icons/MaterialIcons';
 import { AntDesign } from '@expo/vector-icons';
 
 export function DrawerNavigation() {

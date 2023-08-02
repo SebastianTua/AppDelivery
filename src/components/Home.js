@@ -9,15 +9,14 @@ import {
   TextInput,
   FlatList,
 } from 'react-native';
-import {Categories, COLOURS} from '../database/items';
+import {Categories, COLOURS, Items} from '../database/items';
 import Material from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import ProductInfo from './Details';
 import Toast from 'react-native-root-toast';
-import Search from './Search';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home = ({navigation}) => {
   const [currentSelected, setCurrentSelected] = useState([0]);
@@ -36,13 +35,53 @@ const Home = ({navigation}) => {
 
   const getDataFromDB = () => {
     let productList = [];
-    for (let index = 0; index < Categories.length; index++) {
-      if (Categories[index].category == 'product') {
-        productList.push(Categories[index]);
+    for (let index = 0; index < Items.length; index++) {
+      if (Items[index].category == 'product') {
+        productList.push(Items[index]);
       }
     }
 
     setProducts(productList);
+  };
+  
+  const addToCart = async id => {
+    let itemArray = await AsyncStorage.getItem('cartItems');
+    itemArray = JSON.parse(itemArray);
+    if (itemArray) {
+      let array = itemArray;
+      array.push(id);
+
+      try {
+        await AsyncStorage.setItem('cartItems', JSON.stringify(array));
+        Toast.show(
+          'Añadido al carrito correctamente',{
+            backgroundColor:'#FFFFFF',
+            textColor:'green',
+            position:Toast.positions.BOTTOM,
+            opacity:1,
+            shadowColor:'#000',
+            duration:1500
+          },
+          Toast.SHORT,
+        );
+      } catch (error) {
+        return error;
+      }
+    } else {
+      let array = [];
+      array.push(id);
+      try {
+        await AsyncStorage.setItem('cartItems', JSON.stringify(array));
+        Toast.show(
+          'Item Added Successfully to cart',
+          Toast.SHORT,
+        );
+        navigation.navigate('Home');
+      } catch (error) {
+        return error;
+      }
+    }
+    console.log(data,'anadido')
   };
 
 
@@ -116,7 +155,7 @@ const Home = ({navigation}) => {
           alignItems: 'center',
         }}
         onPress={() =>
-          navigation.push('ProductInfo', {data})
+          navigation.navigate('ProductInfo', {data:data})
         }>
         <View
           style={{
@@ -201,7 +240,7 @@ const Home = ({navigation}) => {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
-              onPress={() => addToCart(Details.id)}>
+              onPress={() => addToCart(data.id)}>
               <Entypo
                 name="plus"
                 style={{fontSize: 18, color: COLOURS.black}}
@@ -231,7 +270,6 @@ const Home = ({navigation}) => {
       </TouchableOpacity>
     );
   };
-  const [input,setInput]= useState("")
   return (
     <View
       style={{
@@ -360,7 +398,7 @@ const Home = ({navigation}) => {
             }}>
             Popular
           </Text>
-          {Categories[currentSelected].items.map(renderItems)}
+          {Categories[currentSelected].item.map(renderItems)}
           <TouchableOpacity
             style={{
               margin: 30,

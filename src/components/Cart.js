@@ -1,12 +1,10 @@
 import { View, Text, TouchableOpacity, Image, FlatList, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Categories, COLOURS } from '../database/items';
+import { Categories, COLOURS, Items } from '../database/items';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import Details from './Details';
-
 
 const Cart = ({ navigation }) => {
     const [product, setProduct] = useState();
@@ -14,21 +12,68 @@ const Cart = ({ navigation }) => {
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
+            getDataFromDB()
         });
 
         return unsubscribe;
     }, [navigation]);
 
-    const renderProducts = () => {
+    const getDataFromDB = async () => {
+        let items = await AsyncStorage.getItem('cartItems');
+        items = JSON.parse(items);
+        let productData = [];
+        if (items) {
+            Items.forEach(data => {
+                console.log('data: ', data)
+
+                console.log('items: ', items)
+                if (items.includes(data.id)) {
+                    productData.push(data);
+                    return;
+                }
+            });
+            setProduct(productData);
+            getTotal(productData);
+        }
+    };
+
+    //get total price of all items in the cart
+    const getTotal = productData => {
+        let total = 0;
+        for (let index = 0; index < productData.length; index++) {
+            let price = productData[index].price;
+            total = total + price;
+        }
+        setTotal(total);
+    };
+
+    //remove data from Cart
+
+    const removeItemFromCart = async id => {
+        let itemArray = await AsyncStorage.getItem('cartItems');
+        itemArray = JSON.parse(itemArray);
+        if (itemArray) {
+            let array = itemArray;
+            for (let index = 0; index < array.length; index++) {
+                if (array[index] == id) {
+                    array.splice(index, 1);
+                }
+
+                await AsyncStorage.setItem('cartItems', JSON.stringify(array));
+                getDataFromDB();
+            }
+        }
+    };
+
+    console.log('product: ', product)
+
+    const renderProducts = (data, index) => {
         return (
-            <TouchableOpacity
-                activeOpacity={0.9}
-                style={styles.div}
-            >
+            <View style={styles.div}>
                 <View style={styles.container}>
                     <View style={{ marginBottom: 50 }}>
                         <TouchableOpacity
-                            onPress={() => { }}
+                            onPress={() => removeItemFromCart(data.item.id)}
                         >
                             <Entypo
                                 name="cross"
@@ -37,16 +82,16 @@ const Cart = ({ navigation }) => {
                         </TouchableOpacity>
                         <Text
                             style={styles.title}>
-                            product
+                            {data.item.name}
                         </Text>
                         <Text
                             style={styles.precio}>
-                            $19.99
+                            ${data.item.price}
                         </Text>
                     </View>
                     <View style={styles.imgCont}>
                         <Image
-                            source={require('../database/images/pizza/pepperonipizza.png')}
+                            source={data.item.image}
                             style={styles.img}
                         />
                     </View>
@@ -61,7 +106,7 @@ const Cart = ({ navigation }) => {
                             />
                         </TouchableOpacity>
                         <View style={styles.cant}>
-                            <Text style={styles.cantText}> 1</Text>
+                            <Text style={styles.cantText}>1</Text>
                         </View>
                         <TouchableOpacity
                             style={styles.btn}
@@ -79,12 +124,12 @@ const Cart = ({ navigation }) => {
                             />
                             <Text
                                 style={styles.star}>
-                                5.0
+                                {data.item.rating}
                             </Text>
                         </View>
                     </View>
                 </View>
-            </TouchableOpacity>
+            </View>
         )
     }
 
@@ -100,19 +145,20 @@ const Cart = ({ navigation }) => {
                 />
             </TouchableOpacity>
             <FlatList
-                data={Categories}
+                data={product ?? []}
                 renderItem={renderProducts}
                 showsHorizontalScrollIndicator={false}
                 style={{ height: '70%' }}
+                ListEmptyComponent={() => <><Text style={styles.vacio}>carrito vacio <AntDesign name="shoppingcart" size={20} /></Text></>}
             />
             <Text style={styles.total}>Total:</Text>
-            <Text style={styles.totalNum}>$32.97</Text>
+            <Text style={styles.totalNum}>${total}</Text>
             <TouchableOpacity
-                onPress={() => navigation.navigate('pago')}
+                onPress={() => console.log(product)}
                 style={styles.btnPagar}>
                 <Text
                     style={styles.btnText}>
-                     Pagar
+                    Pagar
                 </Text>
                 <Entypo
                     name="chevron-right"
@@ -134,6 +180,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+    },
+    vacio: {
+        flex: 1,
+        marginTop: '70%',
+        marginLeft: '35%',
+        fontSize: 22,
+        color: COLOURS.gray,
+        fontWeight: '600',
+        opacity: .6
     },
     cant: {
         marginBottom: 10,
@@ -235,9 +290,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         display: 'flex',
         marginLeft: 90,
-        fontSize: 22,
-        marginTop: -22,
-        marginBottom: 10
+        fontSize: 25,
+        marginTop: -27,
+        marginBottom: 10,
+        color:'#4F4F4F',
+        opacity:.8
     },
     btnPagar: {
         width: '90%',
@@ -249,6 +306,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         marginLeft: 25,
+        marginTop: 10,
     },
     btnText: {
         fontSize: 16,
