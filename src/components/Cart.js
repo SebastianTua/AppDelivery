@@ -5,6 +5,7 @@ import { Categories, COLOURS, Items } from '../database/items';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import data from 'react-native-ico/src/data';
 
 const Cart = ({ navigation }) => {
     const [product, setProduct] = useState();
@@ -36,7 +37,7 @@ const Cart = ({ navigation }) => {
             getTotal(productData);
         }
     };
-
+    
     //get total price of all items in the cart
     const getTotal = productData => {
         let total = 0;
@@ -64,6 +65,45 @@ const Cart = ({ navigation }) => {
             }
         }
     };
+    const addToCart = async id => {
+        let itemArray = await AsyncStorage.getItem('cartItems');
+        itemArray = JSON.parse(itemArray);
+        if (itemArray) {
+          let array = itemArray;
+          array.push(id);
+    
+          try {
+            await AsyncStorage.setItem('cartItems', JSON.stringify(array));
+            Toast.show(
+              'Añadido al carrito correctamente',{
+                backgroundColor:'#FFFFFF',
+                textColor:'green',
+                position:Toast.positions.BOTTOM,
+                opacity:1,
+                shadowColor:'#000',
+                duration:1500
+              },
+              Toast.SHORT,
+            );
+          } catch (error) {
+            return error;
+          }
+        } else {
+          let array = [];
+          array.push(id);
+          try {
+            await AsyncStorage.setItem('cartItems', JSON.stringify(array));
+            Toast.show(
+              'Item Added Successfully to cart',
+              Toast.SHORT,
+            );
+            navigation.navigate('Home');
+          } catch (error) {
+            return error;
+          }
+        }
+        console.log(data,'anadido')
+      };
 
     console.log('product: ', product)
 
@@ -99,7 +139,7 @@ const Cart = ({ navigation }) => {
                         style={styles.contBtn}>
                         <TouchableOpacity
                             style={styles.btn}
-                            onPress={() => { }}>
+                            onPress={() => {}}>
                             <Entypo
                                 name="plus"
                                 style={styles.icon}
@@ -110,7 +150,7 @@ const Cart = ({ navigation }) => {
                         </View>
                         <TouchableOpacity
                             style={styles.btn}
-                            onPress={() => { }}>
+                            onPress={() => removeItemFromCart(data.item.id)}>
                             <Entypo
                                 name="minus"
                                 style={styles.icon}

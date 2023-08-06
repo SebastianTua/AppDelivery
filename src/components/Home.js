@@ -17,6 +17,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Toast from 'react-native-root-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SearchExample from './Search';
 
 const Home = ({navigation}) => {
   const [currentSelected, setCurrentSelected] = useState([0]);
@@ -357,19 +358,16 @@ const Home = ({navigation}) => {
               name="search"
               style={{fontSize: 20, color: COLOURS.black, opacity: 0.8}}
             />
-            <TextInput
-              placeholder="Search..."
-              style={{
-                color: COLOURS.black,
-                fontSize: 16,
-                paddingVertical: 5,
-                borderBottomWidth: 1,
-                borderBottomColor: COLOURS.black + 20,
-                width: '90%',
-                marginLeft: 10,
-                letterSpacing: 1,
-              }}
-            />
+            <SearchExample style={{
+            color: COLOURS.black,
+            fontSize: 16,
+            paddingVertical: 5,
+            borderBottomWidth: 1,
+            borderBottomColor: COLOURS.black + 20,
+            width: '90%',
+            marginLeft: 10,
+            letterSpacing: 1,
+          }}/>
           </View>
           <Text
             style={{
