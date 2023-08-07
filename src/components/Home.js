@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,8 +8,9 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
+  StyleSheet
 } from 'react-native';
-import {Categories, COLOURS, Items} from '../database/items';
+import { Categories, COLOURS, Items } from '../database/items';
 import Material from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome5';
@@ -19,7 +20,7 @@ import Toast from 'react-native-root-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SearchExample from './Search';
 
-const Home = ({navigation}) => {
+const Home = ({ navigation }) => {
   const [currentSelected, setCurrentSelected] = useState([0]);
   const [products, setProducts] = useState([]);
 
@@ -44,7 +45,7 @@ const Home = ({navigation}) => {
 
     setProducts(productList);
   };
-  
+
   const addToCart = async id => {
     let itemArray = await AsyncStorage.getItem('cartItems');
     itemArray = JSON.parse(itemArray);
@@ -55,14 +56,14 @@ const Home = ({navigation}) => {
       try {
         await AsyncStorage.setItem('cartItems', JSON.stringify(array));
         Toast.show(
-          'Añadido al carrito correctamente',{
-            backgroundColor:'#FFFFFF',
-            textColor:'green',
-            position:Toast.positions.BOTTOM,
-            opacity:1,
-            shadowColor:'#000',
-            duration:1500
-          },
+          'Añadido al carrito correctamente', {
+          backgroundColor: '#FFFFFF',
+          textColor: 'green',
+          position: Toast.positions.BOTTOM,
+          opacity: 1,
+          shadowColor: '#000',
+          duration: 1500
+        },
           Toast.SHORT,
         );
       } catch (error) {
@@ -82,11 +83,11 @@ const Home = ({navigation}) => {
         return error;
       }
     }
-    console.log(data,'anadido')
+    console.log(data, 'anadido')
   };
 
 
-  const renderCategories = ({item, index}) => {
+  const renderCategories = ({ item, index }) => {
     return (
       <TouchableOpacity
         activeOpacity={0.9}
@@ -103,34 +104,21 @@ const Home = ({navigation}) => {
             margin: 10,
             elevation: 5
           }}>
-          <View style={{width: 60, height: 60}}>
+          <View style={styles.contImgCategorias}>
             <Image
               source={item.image}
-              style={{
-                width: '100%',
-                height: '100%',
-                resizeMode: 'center',
-              }}
+              style={styles.imgCategorias}
             />
           </View>
           <Text
-            style={{
-              fontSize: 16,
-              color: COLOURS.black,
-              fontWeight: '600',
-            }}>
+            style={styles.categoriesName}>
             {item.name}
           </Text>
           <View
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 100,
+            style={[styles.div, {
               backgroundColor:
-                currentSelected == index ? COLOURS.white : COLOURS.accentGray,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+                currentSelected == index ? COLOURS.white : COLOURS.accentGray
+            }]}>
             <FontAwesome
               name="angle-right"
               style={{
@@ -156,7 +144,7 @@ const Home = ({navigation}) => {
           alignItems: 'center',
         }}
         onPress={() =>
-          navigation.navigate('ProductInfo', {data:data})
+          navigation.navigate('ProductInfo', { data: data })
         }>
         <View
           style={{
@@ -171,7 +159,7 @@ const Home = ({navigation}) => {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <View style={{marginBottom: 50}}>
+          <View style={{ marginBottom: 50 }}>
             <View
               style={{
                 flexDirection: 'row',
@@ -207,14 +195,14 @@ const Home = ({navigation}) => {
             <Text
               style={{
                 fontSize: 14,
-                marginTop:5,
+                marginTop: 5,
                 color: COLOURS.black,
                 opacity: 0.5,
               }}>
               ${data.price}
             </Text>
           </View>
-          <View style={{width: 150, height: 150, marginRight: -25}}>
+          <View style={{ width: 150, height: 150, marginRight: -25 }}>
             <Image
               source={data.image}
               style={{
@@ -244,7 +232,7 @@ const Home = ({navigation}) => {
               onPress={() => addToCart(data.id)}>
               <Entypo
                 name="plus"
-                style={{fontSize: 18, color: COLOURS.black}}
+                style={{ fontSize: 18, color: COLOURS.black }}
               />
             </TouchableOpacity>
             <View
@@ -255,7 +243,7 @@ const Home = ({navigation}) => {
               }}>
               <AntDesign
                 name="star"
-                style={{fontSize: 12, color: COLOURS.black, paddingRight: 5}}
+                style={{ fontSize: 12, color: COLOURS.black, paddingRight: 5 }}
               />
               <Text
                 style={{
@@ -289,7 +277,7 @@ const Home = ({navigation}) => {
           <StatusBar backgroundColor={COLOURS.white} barStyle="dark-content" />
           <Image
             source={require('../database/images/background.png')}
-            style={{position: 'absolute', top: 0, left: -100}}
+            style={{ position: 'absolute', top: 0, left: -100 }}
           />
           <View
             style={{
@@ -302,8 +290,8 @@ const Home = ({navigation}) => {
                 width: 40,
                 height: 40,
               }}
-              onPress={()=>navigation.openDrawer()}
-              >
+              onPress={() => navigation.openDrawer()}
+            >
               <Image
                 source={require('../database/images/profile.jpg')}
                 style={{
@@ -311,7 +299,7 @@ const Home = ({navigation}) => {
                   height: '100%',
                   resizeMode: 'contain',
                   borderRadius: 500,
-                  marginTop:25
+                  marginTop: 25
                 }}
               />
             </TouchableOpacity>
@@ -321,13 +309,13 @@ const Home = ({navigation}) => {
                 style={{
                   fontSize: 28,
                   color: COLOURS.black,
-                  marginTop:25,
+                  marginTop: 25,
                 }}
                 onPress={() => navigation.navigate('cart')}
               />
             </TouchableOpacity>
           </View>
-          <View style={{padding: 20}}>
+          <View style={{ padding: 20 }}>
             <Text
               style={{
                 fontSize: 16,
@@ -356,18 +344,18 @@ const Home = ({navigation}) => {
             }}>
             <Ionicons
               name="search"
-              style={{fontSize: 20, color: COLOURS.black, opacity: 0.8}}
+              style={{ fontSize: 20, color: COLOURS.black, opacity: 0.8 }}
             />
             <SearchExample style={{
-            color: COLOURS.black,
-            fontSize: 16,
-            paddingVertical: 5,
-            borderBottomWidth: 1,
-            borderBottomColor: COLOURS.black + 20,
-            width: '90%',
-            marginLeft: 10,
-            letterSpacing: 1,
-          }}/>
+              color: COLOURS.black,
+              fontSize: 16,
+              paddingVertical: 5,
+              borderBottomWidth: 1,
+              borderBottomColor: COLOURS.black + 20,
+              width: '90%',
+              marginLeft: 10,
+              letterSpacing: 1,
+            }} />
           </View>
           <Text
             style={{
@@ -419,5 +407,28 @@ const Home = ({navigation}) => {
     </View>
   );
 };
+const styles = StyleSheet.create({
+  contImgCategorias: {
+    width: 60,
+    height: 60
+  },
+  imgCategorias: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'center',
+  },
+  categoriesName: {
+    fontSize: 16,
+    color: COLOURS.black,
+    fontWeight: '600',
+  },
+  div: {
+    width: 30,
+    height: 30,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+})
 
 export default Home;

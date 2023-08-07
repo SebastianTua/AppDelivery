@@ -75,33 +75,20 @@ const ProductInfo = ({ route, navigation }) => {
 
   return (
     <View
-      style={{
-        width: '100%',
-        height: '100%',
-        backgroundColor: COLOURS.white,
-        position: 'relative',
-      }}>
+      style={styles.div}>
       <View
-        style={{
-          padding: 20,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
+        style={styles.divBtnBack}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.btnBack}>
           <FontAwesome
             name="angle-left"
-            style={{
-              fontSize: 16,
-              color: COLOURS.black,
-            }}
+            style={styles.btnIcon}
           />
         </TouchableOpacity>
         <View
           style={styles.btnCart}>
-          <Material name="shopping-cart" style={{ fontSize: 25, color: COLOURS.white }} onPress={() => navigation.navigate('cart')} />
+          <Material name="shopping-cart" style={styles.iconCart} onPress={() => navigation.navigate('cart')} />
         </View>
       </View>
       <Text
@@ -121,8 +108,8 @@ const ProductInfo = ({ route, navigation }) => {
       </View>
       <View
         style={styles.container}>
-        <View style={{ paddingHorizontal: 20 }}>
-          <View style={{ paddingVertical: 20 }}>
+        <View style={styles.divInfoHor}>
+          <View style={styles.divInfoVer}>
             <Text
               style={styles.info}>
               Size
@@ -132,7 +119,7 @@ const ProductInfo = ({ route, navigation }) => {
               {data.size}
             </Text>
           </View>
-          <View style={{ paddingVertical: 20 }}>
+          <View style={styles.divInfoVer}>
             <Text
               style={styles.info}>
               Crust
@@ -142,7 +129,7 @@ const ProductInfo = ({ route, navigation }) => {
               {data?.crust}
             </Text>
           </View>
-          <View style={{ paddingVertical: 20 }}>
+          <View style={styles.divInfoVer}>
             <Text
               style={styles.info}>
               Delivery
@@ -154,10 +141,7 @@ const ProductInfo = ({ route, navigation }) => {
           </View>
         </View>
         <View
-          style={{
-            width: 380,
-            height: 380,
-          }}>
+          style={styles.divImg}>
           <Image
             source={data.image}
             style={styles.img}
@@ -193,7 +177,7 @@ const ProductInfo = ({ route, navigation }) => {
           </Text>
           <Entypo
             name="chevron-right"
-            style={{ fontSize: 16, color: COLOURS.black }}
+            style={styles.btnIcon}
           />
         </TouchableOpacity>
       </View>
@@ -201,12 +185,38 @@ const ProductInfo = ({ route, navigation }) => {
   );
 };
 const styles = StyleSheet.create({
+  div:{
+    width: '100%',
+    height: '100%',
+    backgroundColor: COLOURS.white,
+    position: 'relative',
+  },
+  btnIcon:{ 
+    fontSize: 16, 
+    color: COLOURS.black 
+  },
+  iconCart:{ 
+    fontSize: 25, 
+    color: COLOURS.white 
+  },
   ingredients: {
     paddingTop: 20,
     paddingHorizontal: 20,
     fontSize: 20,
     fontWeight: '700',
     color: COLOURS.black,
+  },
+  divInfoVer:{ 
+    paddingVertical: 20 
+  },
+  divInfoHor:{
+    paddingHorizontal: 20
+  },
+  divBtnBack:{
+    padding: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   btnBack: {
     width: 40,
@@ -265,6 +275,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: COLOURS.black,
     fontWeight: '600',
+  },
+  divImg:{
+    width: 380,
+    height: 380,
   },
   img: {
     width: '100%',
