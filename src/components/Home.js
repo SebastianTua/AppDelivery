@@ -93,17 +93,10 @@ const Home = ({ navigation }) => {
         activeOpacity={0.9}
         onPress={() => setCurrentSelected(index)}>
         <View
-          style={{
-            width: 120,
-            height: 180,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-            backgroundColor:
+          style={[styles.categoriesDiv,
+            {backgroundColor:
               currentSelected == index ? COLOURS.accent : COLOURS.light,
-            borderRadius: 20,
-            margin: 10,
-            elevation: 5
-          }}>
+          }]}>
           <View style={styles.contImgCategorias}>
             <Image
               source={item.image}
@@ -408,6 +401,15 @@ const Home = ({ navigation }) => {
   );
 };
 const styles = StyleSheet.create({
+  categoriesDiv:{
+    width: 120,
+    height: 180,
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    borderRadius: 20,
+    margin: 10,
+    elevation: 5,
+  },
   contImgCategorias: {
     width: 60,
     height: 60
